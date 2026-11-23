@@ -638,7 +638,7 @@ function Projects() {
 
   return (
     <section className="section section--alt" id="projects">
-      <div className="container container--wide">
+      <div className="container">
         <h2 className="section__title">Selected Projects</h2>
         <div
           ref={clipRef}
