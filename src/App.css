@@ -613,7 +613,8 @@
    hover shadows room inside the clip. */
 #projects {
   --projects-gap: clamp(20px, 3vw, 44px);
-  --tab-r: 46px;
+  --tab-r: 46px; /* semicircle radius; matches R in TAB (App.jsx) */
+  --tab-h: calc(var(--tab-r) * 56 / 46); /* radius + fillet (R + F) */
   --bg: 243, 236, 224; /* --cream-100 as RGB */
 }
 
@@ -632,7 +633,7 @@
 }
 
 .projects-clip.has-more .projects {
-  padding-bottom: calc(var(--tab-r) + var(--projects-gap));
+  padding-bottom: calc(var(--tab-h) + var(--projects-gap));
 }
 
 /* Zero-height row on the cutoff line; the tab sits on it, dome up. It follows
@@ -662,44 +663,93 @@
   transition: opacity 0.35s ease 0.55s;
 }
 
-/* 100vw can include the scrollbar; never let the shadow cause sideways scroll */
+/* 100vw can include the scrollbar; never let the shadow cause sideways scroll.
+   Bottom padding is fixed at the value that centres the ring between the last
+   row and the next section when expanded: last card → ring centre = gap + tab
+   height − F; ring centre → section end = F + padding. Equal when padding =
+   gap + tab height − 2F (F = 10/56 of the tab height). */
 #projects {
   overflow-x: clip;
+  padding-bottom: calc(var(--projects-gap) + var(--tab-h) * 36 / 56);
 }
 
-/* Cream semicircle; its shadow follows the dome, continuing the cut-line shadow */
+/* Cream semicircle on the cut line with filleted (smoothly curved) joins,
+   drawn as an SVG so its shadow can follow the outline; the arrow sits
+   centred on top. The shape is exactly twice as wide as it is tall. */
 .more-tab {
   position: absolute;
   bottom: 0;
   left: 50%;
   z-index: 2;
-  width: calc(var(--tab-r) * 2);
-  height: var(--tab-r);
+  width: calc(var(--tab-h) * 2);
+  height: var(--tab-h);
   transform: translateX(-50%);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   padding: 0;
   border: 0;
-  border-radius: var(--tab-r) var(--tab-r) 0 0;
-  background: var(--cream-100);
+  background: none;
   color: var(--burgundy-700);
   cursor: pointer;
-  box-shadow: 0 -8px 14px -8px rgba(61, 15, 26, 0.45);
-  transition: color 0.2s, box-shadow 0.2s ease;
+  transition: color 0.2s;
 }
 
-.more-tab.is-open {
-  box-shadow: 0 -8px 14px -8px rgba(61, 15, 26, 0);
-  transition: color 0.2s, box-shadow 0.35s ease 0.55s;
+.more-tab__shape {
+  position: absolute;
+  left: 0;
+  bottom: -2px; /* the 2px overlap below the cut line (EXT in TAB) */
+  width: 100%;
+  height: calc(100% + 2px);
+  fill: var(--cream-100);
+  overflow: visible;
 }
 
-/* The chevron's tip sits on the semicircle's flat edge (path tip is at
-   y=15.5 of 24, so pull the icon down by the rest: 8.5/24 of its size) */
-.more-tab svg {
-  width: 34px;
-  height: 34px;
-  margin-bottom: calc(-34px * 8.5 / 24 + 1px);
+/* Inset ring around the arrow, concentric with the dome: radius 32 (R - 14),
+   centred 10px (F) above the cut line. No fill or border, just an inner
+   shadow so it reads as pressed into the surface. Sizes scale with the tab
+   (desktop tab height is 56). */
+.more-tab__ring {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--tab-h) * (10 - 32) / 56);
+  width: calc(var(--tab-h) * 64 / 56);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 2px 6px rgba(61, 15, 26, 0.22),
+    inset 0 1px 2px rgba(61, 15, 26, 0.12);
+  transition: box-shadow 0.2s;
+}
+
+.more-tab:hover .more-tab__ring {
+  box-shadow:
+    inset 0 3px 8px rgba(61, 15, 26, 0.3),
+    inset 0 1px 2px rgba(61, 15, 26, 0.16);
+}
+
+/* Only the above-the-line outline casts the shadow; the fill path drawn on
+   top of it covers the shadow's lower half and the seam at the cut line */
+.more-tab__shadow {
+  filter: drop-shadow(0 -4px 6px rgba(61, 15, 26, 0.35));
+  transition: filter 0.2s ease;
+}
+
+.more-tab.is-open .more-tab__shadow {
+  filter: drop-shadow(0 -4px 6px rgba(61, 15, 26, 0));
+  transition: filter 0.35s ease 0.55s;
+}
+
+/* The chevron sits at the centre of the faint ring, which shares the dome's
+   centre: 10px (F) above the base, i.e. 10/56 of the tab's height. Its visible
+   stroke's middle is 11.5/24 up from the icon's bottom. */
+.more-tab__icon {
+  --icon: 42px;
+  position: relative;
+  width: var(--icon);
+  height: var(--icon);
+  margin-bottom: calc(var(--tab-h) * 10 / 56 - var(--icon) * 11.5 / 24 - 1.5px); /* a touch below centre */
   transition: transform 0.35s ease;
 }
 
@@ -707,13 +757,16 @@
   color: var(--burgundy-500);
 }
 
-.more-tab.is-open svg {
+.more-tab.is-open .more-tab__icon {
   transform: rotate(180deg);
 }
 
 @media (max-width: 640px) {
   #projects {
     --tab-r: 40px;
+  }
+  .more-tab__icon {
+    --icon: 36px;
   }
 }
 

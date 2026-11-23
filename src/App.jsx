@@ -527,6 +527,31 @@ function About() {
 // cut hides the bottom 40% of the image)
 const PEEK_RATIO = 0.6;
 
+// The tab under the cut: a semicircle (radius R) raised by F so its widest
+// point sits right above the base, where it drops into the cut line through a
+// quarter-circle fillet (radius F) on each side: a smooth right angle, no
+// corners. Width is exactly twice the height. (The inset ring around the
+// arrow, in App.css, is concentric with the dome: radius R - 14.) EXT extends the shape a little
+// below the line so no sliver of the clipped cards shows through its edge.
+const TAB = (() => {
+  const R = 46;
+  const F = 10;
+  const EXT = 2;
+  const H = R + F; // height above the cut line
+  const W = 2 * (R + F);
+  const outline =
+    `M0 ${H} A${F} ${F} 0 0 0 ${F} ${R} ` + // left fillet up to the equator
+    `A${R} ${R} 0 0 1 ${W - F} ${R} ` + // dome
+    `A${F} ${F} 0 0 0 ${W} ${H}`; // right fillet down to the line
+  return {
+    viewBox: `0 0 ${W} ${H + EXT}`,
+    H,
+    W,
+    shadowPath: `${outline} Z`, // casts the shadow; ends exactly at the line
+    fillPath: `${outline} V${H + EXT} H0 Z`, // no shadow; overlaps below the line
+  };
+})();
+
 function ProjectCard({ project, index, hidden }) {
   return (
     <article className="card" inert={hidden}>
@@ -667,13 +692,33 @@ function Projects() {
               aria-controls={clipId}
               onClick={toggle}
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <svg
+                className="more-tab__shape"
+                viewBox={TAB.viewBox}
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <defs>
+                  {/* everything above the cut line, with room for the blur */}
+                  <clipPath id="more-tab-above-line">
+                    <rect x={-30} y={-30} width={TAB.W + 60} height={TAB.H + 30} />
+                  </clipPath>
+                </defs>
+                <g clipPath="url(#more-tab-above-line)">
+                  <path className="more-tab__shadow" d={TAB.shadowPath} />
+                </g>
+                <path d={TAB.fillPath} />
+              </svg>
+              <span className="more-tab__ring" aria-hidden="true" />
+              <svg className="more-tab__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                {/* Arrowhead: same 12×6 footprint as a chevron, filled, with a
+                    narrow concave notch in the middle of its back edge */}
                 <path
-                  d="M6 9.5l6 6 6-6"
-                  fill="none"
+                  d="M6 9.5 L12 15.5 L18 9.5 C 15 9.6, 13.4 11.7, 12 11.7 C 10.6 11.7, 9 9.6, 6 9.5 Z"
+                  fill="currentColor"
                   stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
+                  strokeWidth="1"
                   strokeLinejoin="round"
                 />
               </svg>
