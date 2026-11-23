@@ -448,17 +448,22 @@ function Background() {
           </button>
         ))}
       </div>
-      {tabs.map((t, i) => (
-        <div
-          key={t.key}
-          role="tabpanel"
-          id={`${baseId}-panel-${t.key}`}
-          aria-labelledby={`${baseId}-tab-${t.key}`}
-          hidden={active !== i}
-        >
-          <t.Panel />
-        </div>
-      ))}
+      {/* Panels share one grid cell, so the box is always as tall as the
+          tallest panel and switching tabs never shifts the page below */}
+      <div className="bg-panel__body">
+        {tabs.map((t, i) => (
+          <div
+            key={t.key}
+            role="tabpanel"
+            id={`${baseId}-panel-${t.key}`}
+            aria-labelledby={`${baseId}-tab-${t.key}`}
+            className={`bg-panel__pane${active === i ? " is-active" : ""}`}
+            inert={active !== i}
+          >
+            <t.Panel />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

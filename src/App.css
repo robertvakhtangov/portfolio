@@ -305,6 +305,23 @@
   padding-top: 0.35rem;
 }
 
+.bg-panel__body {
+  display: grid;
+}
+
+.bg-panel__pane {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.bg-panel__pane.is-active {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
 .tabs {
   display: flex;
   gap: 28px;
