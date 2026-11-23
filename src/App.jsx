@@ -112,6 +112,18 @@ const projects = [
 ];
 // ----------------------------------------------------------------------------
 
+// North–south compass mark: two slim needles whose bases arc around a centre dot.
+// Bases sit on a circle (r=5.4) concentric with the dot (r=2.8), leaving an even gap.
+function CompassMark({ className }) {
+  return (
+    <svg className={className} viewBox="3.2 0 9.6 36" aria-hidden="true" focusable="false">
+      <path d="M8 1 L12.6 15.17 A5.4 5.4 0 0 0 3.4 15.17 Z" fill="currentColor" />
+      <circle cx="8" cy="18" r="2.8" fill="currentColor" />
+      <path d="M8 35 L12.6 20.83 A5.4 5.4 0 0 1 3.4 20.83 Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -126,7 +138,9 @@ function Nav() {
     <header className={`nav${scrolled ? " nav--scrolled" : ""}`}>
       <div className="container nav__inner">
         <a href="#top" className="nav__logo" aria-label={`${profile.brand} — ${profile.name}, back to top`}>
-          {profile.brand}
+          Rob
+          <CompassMark className="nav__mark" />
+          Vak
         </a>
         <nav>
           <ul className="nav__links">

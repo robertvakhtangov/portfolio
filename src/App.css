@@ -40,6 +40,27 @@
   white-space: nowrap;
 }
 
+.nav__logo {
+  display: inline-flex;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 1.1rem;
+}
+
+.nav__mark {
+  height: 1.3em;
+  width: auto;
+  margin: 0 0.17em;
+  color: var(--cream-50);
+  transition: transform 0.4s ease;
+}
+
+/* a little needle swing on hover */
+.nav__logo:hover .nav__mark {
+  transform: rotate(14deg);
+}
+
 .nav__links {
   display: flex;
   gap: clamp(16px, 3vw, 32px);
