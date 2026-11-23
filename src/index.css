@@ -20,7 +20,6 @@
   color-scheme: light;
   font: 17px/1.6 var(--sans);
   color: var(--ink);
-  background: var(--cream-50);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -34,6 +33,11 @@
 
 html {
   scroll-behavior: smooth;
+  /* No rubber-band bounce past the top/bottom of the page (macOS trackpads) */
+  overscroll-behavior-y: none;
+  /* Fallback for browsers that still bounce: the area revealed behind the page
+     matches the burgundy hero and footer instead of flashing cream */
+  background: var(--burgundy-900);
 }
 
 body {
