@@ -9,9 +9,9 @@ const profile = {
   role: "Software Engineer",
   tagline:
     "I build thoughtful, fast web experiences — from clean interfaces to the systems behind them.",
-  email: "hello@example.com",
+  email: "robertvakhtangov@gmail.com",
   github: "https://github.com/robertvakhtangov",
-  linkedin: "https://linkedin.com/in/your-username",
+  linkedin: "", // add your LinkedIn profile URL to show the link
 };
 
 const about = [
@@ -480,7 +480,9 @@ function Contact() {
         </a>
         <ul className="contact__social">
           <li><a href={profile.github} target="_blank" rel="noreferrer">GitHub</a></li>
-          <li><a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a></li>
+          {profile.linkedin && (
+            <li><a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a></li>
+          )}
         </ul>
       </div>
     </section>
