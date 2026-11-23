@@ -56,9 +56,37 @@
   transition: transform 0.4s ease;
 }
 
-/* a little needle swing on hover */
+/* a little needle swing on hover (scroll spin uses the separate `rotate` property) */
 .nav__logo:hover .nav__mark {
   transform: rotate(14deg);
+}
+
+/* While the needle spins, ROB and VAK step aside so it has room to turn.
+   On the way back they share --realign with the needle, so they appear to
+   push it upright. */
+.nav__logo {
+  --realign: 0.55s cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.nav__word {
+  display: inline-block;
+  transition: transform var(--realign);
+}
+
+.nav__mark.is-realigning {
+  transition: rotate var(--realign), transform 0.4s ease;
+}
+
+.nav__logo.is-spinning .nav__word {
+  transition-duration: 0.2s;
+}
+
+.nav__logo.is-spinning .nav__word--left {
+  transform: translateX(-0.5em);
+}
+
+.nav__logo.is-spinning .nav__word--right {
+  transform: translateX(0.5em);
 }
 
 .nav__links {

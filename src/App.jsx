@@ -114,9 +114,9 @@ const projects = [
 
 // North–south compass mark: two slim needles whose bases arc around a centre dot.
 // Bases sit on a circle (r=5.4) concentric with the dot (r=2.8), leaving an even gap.
-function CompassMark({ className }) {
+function CompassMark({ className, ref }) {
   return (
-    <svg className={className} viewBox="3.2 0 9.6 36" aria-hidden="true" focusable="false">
+    <svg ref={ref} className={className} viewBox="3.2 0 9.6 36" aria-hidden="true" focusable="false">
       <path d="M8 1 L12.6 15.17 A5.4 5.4 0 0 0 3.4 15.17 Z" fill="currentColor" />
       <circle cx="8" cy="18" r="2.8" fill="currentColor" />
       <path d="M8 35 L12.6 20.83 A5.4 5.4 0 0 1 3.4 20.83 Z" fill="currentColor" />
@@ -124,8 +124,124 @@ function CompassMark({ className }) {
   );
 }
 
+// Spins the compass needle with scroll momentum: faster scrolling = harder spin.
+// The needle coasts to a stop wherever friction leaves it; after a beat, ROB and
+// VAK slide back in and "push" it upright (same duration/easing, see CSS).
+// Writes styles straight to the DOM each frame to avoid React re-renders.
+function useScrollSpin(markRef, logoRef) {
+  useEffect(() => {
+    const mark = markRef.current;
+    const logo = logoRef.current;
+    if (!mark || !logo) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const IMPULSE = 0.3; // deg/frame added per px scrolled
+    const MAX_VEL = 45; // deg/frame cap
+    const FRICTION = 0.955; // proportional drag per frame
+    const DRAG = 0.04; // constant drag per frame, so it comes to a definite stop
+    const SPREAD_AT = 12; // deg off upright before letters make room
+    const REST_PAUSE = 300; // ms to sit still before realigning
+    const REALIGN_MS = 550; // keep in sync with --realign in App.css
+
+    let angle = 0;
+    let vel = 0;
+    let lastY = window.scrollY;
+    let lastT = 0;
+    let raf = 0;
+    let restTimer = 0;
+    let doneTimer = 0;
+    let realigning = false;
+
+    // Both ends are identical, so "upright" is any multiple of 180°
+    const nearestRest = (a) => Math.round(a / 180) * 180;
+    const tilt = (a) => Math.abs(a - nearestRest(a));
+
+    const stopRealign = () => {
+      clearTimeout(restTimer);
+      clearTimeout(doneTimer);
+      restTimer = 0;
+      if (!realigning) return;
+      // freeze wherever the realign transition currently is, then take over
+      const current = parseFloat(getComputedStyle(mark).rotate) || 0;
+      // computed value is normalised; keep the same visual pose
+      angle = current;
+      mark.classList.remove("is-realigning");
+      mark.style.rotate = `${angle}deg`;
+      realigning = false;
+    };
+
+    const realign = () => {
+      restTimer = 0;
+      realigning = true;
+      mark.classList.add("is-realigning");
+      logo.classList.remove("is-spinning"); // letters slide back in...
+      mark.style.rotate = `${nearestRest(angle)}deg`; // ...and push the needle upright
+      // safety net in case transitionend never fires (e.g. background tab)
+      doneTimer = setTimeout(() => onRealignEnd({ propertyName: "rotate" }), REALIGN_MS + 100);
+    };
+
+    const onRealignEnd = (e) => {
+      if (e.propertyName !== "rotate" || !realigning) return;
+      clearTimeout(doneTimer);
+      realigning = false;
+      mark.classList.remove("is-realigning");
+      angle = 0; // every upright pose looks identical
+      mark.style.rotate = "";
+    };
+
+    const frame = (t) => {
+      const dt = lastT ? Math.min((t - lastT) / 16.667, 3) : 1;
+      lastT = t;
+
+      vel *= Math.pow(FRICTION, dt);
+      const drag = DRAG * dt;
+      vel = Math.abs(vel) <= drag ? 0 : vel - Math.sign(vel) * drag;
+      angle += vel * dt;
+      mark.style.rotate = `${angle}deg`;
+
+      if (tilt(angle) > SPREAD_AT) logo.classList.add("is-spinning");
+
+      if (vel === 0) {
+        raf = 0;
+        lastT = 0;
+        if (tilt(angle) > 0.01) restTimer = setTimeout(realign, REST_PAUSE);
+        else {
+          angle = 0;
+          mark.style.rotate = "";
+          logo.classList.remove("is-spinning");
+        }
+        return;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      const dy = y - lastY;
+      lastY = y;
+      if (!dy) return;
+      stopRealign();
+      vel = Math.max(-MAX_VEL, Math.min(MAX_VEL, vel + dy * IMPULSE));
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    mark.addEventListener("transitionend", onRealignEnd);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      mark.removeEventListener("transitionend", onRealignEnd);
+      cancelAnimationFrame(raf);
+      clearTimeout(restTimer);
+      clearTimeout(doneTimer);
+    };
+  }, [markRef, logoRef]);
+}
+
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const markRef = useRef(null);
+  const logoRef = useRef(null);
+  useScrollSpin(markRef, logoRef);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -137,10 +253,15 @@ function Nav() {
   return (
     <header className={`nav${scrolled ? " nav--scrolled" : ""}`}>
       <div className="container nav__inner">
-        <a href="#top" className="nav__logo" aria-label={`${profile.brand} — ${profile.name}, back to top`}>
-          Rob
-          <CompassMark className="nav__mark" />
-          Vak
+        <a
+          href="#top"
+          ref={logoRef}
+          className="nav__logo"
+          aria-label={`${profile.brand} — ${profile.name}, back to top`}
+        >
+          <span className="nav__word nav__word--left">Rob</span>
+          <CompassMark ref={markRef} className="nav__mark" />
+          <span className="nav__word nav__word--right">Vak</span>
         </a>
         <nav>
           <ul className="nav__links">
