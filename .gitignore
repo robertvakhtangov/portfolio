@@ -25,3 +25,7 @@ dist-ssr
 
 # Original source photo (site uses the cutout)
 src/assets/Robert_Vakhtangov.jpg
+
+# Personal resume files (contain home address and phone number)
+*.pdf
+resume.md
