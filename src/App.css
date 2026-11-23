@@ -10,10 +10,18 @@
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 10;
-  background: rgba(61, 15, 26, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(250, 246, 239, 0.08);
+  /* Blends into the hero at the top; becomes a distinct bar once scrolled */
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.3s, border-color 0.3s, backdrop-filter 0.3s, box-shadow 0.3s;
+}
+
+.nav--scrolled {
+  background: rgba(61, 15, 26, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom-color: rgba(250, 246, 239, 0.08);
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.45);
 }
 
 .nav__inner {
