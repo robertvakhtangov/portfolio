@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import "./App.css";
 import headshot from "./assets/headshot-cutout.webp";
 
@@ -90,6 +90,8 @@ const education = [
   },
 ];
 
+// Collapsed, the first row shows in full and the second is cut off; the arrow reveals the rest.
+// Optional per project: image (import it from ./assets, ideally ~1280×720, 16:9).
 const projects = [
   {
     title: "Project One",
@@ -107,6 +109,36 @@ const projects = [
     title: "Project Three",
     description: "A short description of what this project does and the problem it solves.",
     tags: ["Three.js", "WebGL"],
+    link: "#",
+  },
+  {
+    title: "Project Four",
+    description: "A short description of what this project does and the problem it solves.",
+    tags: ["TypeScript", "React"],
+    link: "#",
+  },
+  {
+    title: "Project Five",
+    description: "A short description of what this project does and the problem it solves.",
+    tags: ["Unity", "C#"],
+    link: "#",
+  },
+  {
+    title: "Project Six",
+    description: "A short description of what this project does and the problem it solves.",
+    tags: ["Java"],
+    link: "#",
+  },
+  {
+    title: "Project Seven",
+    description: "A short description of what this project does and the problem it solves.",
+    tags: ["C++"],
+    link: "#",
+  },
+  {
+    title: "Project Eight",
+    description: "A short description of what this project does and the problem it solves.",
+    tags: ["PHP"],
     link: "#",
   },
 ];
@@ -491,27 +523,166 @@ function About() {
   );
 }
 
+// Collapsed, how much of the second row's screenshot stays visible (0.6 = the
+// cut hides the bottom 40% of the image)
+const PEEK_RATIO = 0.6;
+
+function ProjectCard({ project, index, hidden }) {
+  return (
+    <article className="card" inert={hidden}>
+      <div className="card__media">
+        {project.image ? (
+          <img src={project.image} alt="" loading="lazy" />
+        ) : (
+          <span className="card__media-num" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        )}
+      </div>
+      <div className="card__body">
+        <h3 className="card__title">{project.title}</h3>
+        <p className="card__desc">{project.description}</p>
+        <ul className="card__tags">
+          {project.tags.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+        <a className="card__link" href={project.link}>
+          View project <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </article>
+  );
+}
+
 function Projects() {
+  const [expanded, setExpanded] = useState(false);
+  // cards in the first row; null until measured, 0 = everything fits in one row
+  const [firstRow, setFirstRow] = useState(null);
+  const clipRef = useRef(null);
+  const gridRef = useRef(null);
+  const doneTimer = useRef(0);
+  const followRaf = useRef(0);
+  const clipId = useId();
+
+  // Measure where the second row starts so the cutoff lands partway through it,
+  // whatever the column count. Re-runs on resize.
+  useLayoutEffect(() => {
+    const clip = clipRef.current;
+    const grid = gridRef.current;
+    if (!clip || !grid) return;
+    const measure = () => {
+      const cards = [...grid.children];
+      const firstTop = cards[0]?.offsetTop ?? 0;
+      const secondRowIndex = cards.findIndex((c) => c.offsetTop > firstTop + 1);
+      if (secondRowIndex === -1) {
+        setFirstRow(0);
+        return;
+      }
+      const card = cards[secondRowIndex];
+      const media = card.querySelector(".card__media");
+      const cut = card.offsetTop + (media?.offsetHeight ?? card.offsetHeight) * PEEK_RATIO;
+      clip.style.setProperty("--collapsed", `${Math.round(cut)}px`);
+
+      setFirstRow(secondRowIndex);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(grid);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(
+    () => () => {
+      clearTimeout(doneTimer.current);
+      cancelAnimationFrame(followRaf.current);
+    },
+    []
+  );
+
+  // While collapsing, the content above the arrow shrinks and would drag it up
+  // and off screen. Scroll by however far it moves each frame so it stays put.
+  function keepInView(target, duration) {
+    cancelAnimationFrame(followRaf.current);
+    const anchor = target.getBoundingClientRect().top;
+    const end = performance.now() + duration;
+    const step = () => {
+      const drift = target.getBoundingClientRect().top - anchor;
+      if (Math.abs(drift) >= 0.5) window.scrollBy({ top: drift, behavior: "instant" });
+      if (performance.now() < end) followRaf.current = requestAnimationFrame(step);
+    };
+    followRaf.current = requestAnimationFrame(step);
+  }
+
+  const hasMore = firstRow > 0;
+
+  function toggle(e) {
+    const el = clipRef.current;
+    if (!el) return;
+    clearTimeout(doneTimer.current);
+    cancelAnimationFrame(followRaf.current);
+    if (!expanded) {
+      el.style.transitionDuration = "0.9s";
+      el.style.maxHeight = `${el.scrollHeight}px`;
+      // unlock afterwards so the grid can reflow freely
+      doneTimer.current = setTimeout(() => (el.style.maxHeight = "none"), 950);
+    } else {
+      el.style.transitionDuration = "0.5s";
+      el.style.maxHeight = `${el.scrollHeight}px`;
+      void el.offsetHeight; // commit the start height before collapsing
+      el.style.maxHeight = "";
+      keepInView(e.currentTarget, 650);
+    }
+    setExpanded(!expanded);
+  }
+
   return (
     <section className="section section--alt" id="projects">
-      <div className="container">
+      <div className="container container--wide">
         <h2 className="section__title">Selected Projects</h2>
-        <div className="projects">
-          {projects.map((p) => (
-            <article className="card" key={p.title}>
-              <h3 className="card__title">{p.title}</h3>
-              <p className="card__desc">{p.description}</p>
-              <ul className="card__tags">
-                {p.tags.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
-              <a className="card__link" href={p.link}>
-                View project <span aria-hidden="true">→</span>
-              </a>
-            </article>
-          ))}
+        <div
+          ref={clipRef}
+          id={clipId}
+          className={`projects-clip${hasMore ? " has-more" : ""}${expanded ? " is-open" : ""}`}
+        >
+          <div className="projects" ref={gridRef}>
+            {projects.map((p, i) => (
+              <ProjectCard
+                key={p.title}
+                project={p}
+                index={i}
+                hidden={hasMore && !expanded && i >= firstRow}
+              />
+            ))}
+          </div>
         </div>
+
+        {hasMore && (
+          <div className={`projects__toggle${expanded ? " is-open" : ""}`}>
+            <span className="projects__cut-shadow" aria-hidden="true" />
+            <button
+              type="button"
+              className={`more-tab${expanded ? " is-open" : ""}`}
+              aria-expanded={expanded}
+              aria-controls={clipId}
+              onClick={toggle}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M6 9.5l6 6 6-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="sr-only">
+                {expanded ? "Show fewer projects" : `Show all ${projects.length} projects`}
+              </span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
