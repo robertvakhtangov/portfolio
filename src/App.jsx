@@ -4,11 +4,12 @@ import headshot from "./assets/headshot-cutout.webp";
 // ---- Edit your content here ------------------------------------------------
 const profile = {
   name: "Robert Vakhtangov",
-  role: "Software Developer",
+  brand: "RobVak",
+  role: "Software Engineer",
   tagline:
     "I build thoughtful, fast web experiences — from clean interfaces to the systems behind them.",
   email: "hello@example.com",
-  github: "https://github.com/your-username",
+  github: "https://github.com/robertvakhtangov",
   linkedin: "https://linkedin.com/in/your-username",
 };
 
@@ -45,8 +46,8 @@ function Nav() {
   return (
     <header className="nav">
       <div className="container nav__inner">
-        <a href="#top" className="nav__logo">
-          {profile.name}
+        <a href="#top" className="nav__logo" aria-label={`${profile.brand} — ${profile.name}, back to top`}>
+          {profile.brand}
         </a>
         <nav>
           <ul className="nav__links">
