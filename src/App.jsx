@@ -1,3 +1,4 @@
+import { useId, useRef, useState } from "react";
 import "./App.css";
 import headshot from "./assets/headshot-cutout.webp";
 
@@ -19,6 +20,75 @@ const about = [
 ];
 
 const skills = ["JavaScript", "TypeScript", "React", "Node.js", "Python", "Three.js", "SQL", "Git"];
+
+const experience = [
+  {
+    company: "EPAM Systems",
+    role: "Software Engineer",
+    years: "2025",
+    dates: "Mar 2025 – Aug 2025",
+    highlights: [
+      "Delivered features for client web platforms serving large user bases and high-volume data flows.",
+      "Hardened auth, input validation, and data handling to enterprise security standards.",
+    ],
+  },
+  {
+    company: "ExactPro",
+    role: "Front-End Developer",
+    years: "2022 – 2025",
+    dates: "Oct 2022 – Jan 2025",
+    highlights: [
+      "Built and shipped features for a live stock trading platform in JavaScript.",
+      "Audited the legacy codebase, fixing 15+ vulnerabilities; kept 20+ components accessible.",
+    ],
+  },
+  {
+    company: "Ilia State University",
+    role: "Adjunct Professor, Computer Science",
+    years: "2024",
+    dates: "Mar 2024 – Jul 2024",
+    highlights: [
+      "Taught Systems Programming to 25 students, based on CMU's CS:APP.",
+      "Designed weekly labs on memory management, assembly, and low-level systems.",
+    ],
+  },
+  {
+    company: "LTD Iubar",
+    role: "Full-Stack Developer",
+    years: "2020",
+    dates: "May 2020 – Oct 2020",
+    highlights: [
+      "Built PHP analytics tools integrating e-commerce APIs.",
+      "Automated price and stock monitoring, cutting manual tracking time by ~60%.",
+    ],
+  },
+  {
+    company: "Murtsku",
+    role: "Front-End Developer",
+    years: "2019",
+    dates: "Apr 2019 – Oct 2019",
+    highlights: [
+      "Built a React study platform for Georgian university entrance exams, used by 500+ students.",
+    ],
+  },
+];
+
+const education = [
+  {
+    school: "Villanova University",
+    degree: "M.S. Computer Science",
+    years: "Expected 2027",
+    location: "Villanova, PA",
+    notes: ["GPA 3.95", "Tuition Scholar", "UTS Technician"],
+  },
+  {
+    school: "San Diego State University (Georgia)",
+    degree: "B.S. Computer Science",
+    years: "2022",
+    location: "Tbilisi, Georgia",
+    notes: ["GPA 3.81", "Summa Cum Laude", "Dean's List"],
+  },
+];
 
 const projects = [
   {
@@ -84,21 +154,144 @@ function Hero() {
   );
 }
 
+function ExperienceList() {
+  const [open, setOpen] = useState(null);
+  const baseId = useId();
+
+  return (
+    <ol className="timeline">
+      {experience.map((job, i) => {
+        const isOpen = open === i;
+        const panelId = `${baseId}-job-${i}`;
+        return (
+          <li key={job.company} className={`timeline__item${isOpen ? " is-open" : ""}`}>
+            <button
+              type="button"
+              className="timeline__head"
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+              onClick={() => setOpen(isOpen ? null : i)}
+            >
+              <span className="timeline__main">
+                <span className="timeline__company">{job.company}</span>
+                <span className="timeline__role">{job.role}</span>
+              </span>
+              <span className="timeline__years">{job.years}</span>
+              <span className="timeline__icon" aria-hidden="true" />
+            </button>
+            <div className="timeline__panel" id={panelId} role="region" aria-label={`${job.company} details`}>
+              <div className="timeline__panel-inner">
+                <p className="timeline__dates">{job.dates}</p>
+                <ul className="timeline__highlights">
+                  {job.highlights.map((h) => (
+                    <li key={h}>{h}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function EducationList() {
+  return (
+    <ul className="edu">
+      {education.map((e) => (
+        <li key={e.school} className="edu__item">
+          <div className="edu__top">
+            <span className="timeline__company">{e.school}</span>
+            <span className="timeline__years">{e.years}</span>
+          </div>
+          <p className="timeline__role">
+            {e.degree} · {e.location}
+          </p>
+          <ul className="edu__notes">
+            {e.notes.map((n) => (
+              <li key={n}>{n}</li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const tabs = [
+  { key: "experience", label: "Experience", Panel: ExperienceList },
+  { key: "education", label: "Education", Panel: EducationList },
+];
+
+function Background() {
+  const [active, setActive] = useState(0);
+  const tabRefs = useRef([]);
+  const baseId = useId();
+
+  function onKeyDown(e) {
+    const dir = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    if (!dir) return;
+    e.preventDefault();
+    const next = (active + dir + tabs.length) % tabs.length;
+    setActive(next);
+    tabRefs.current[next]?.focus();
+  }
+
+  return (
+    <div className="bg-panel">
+      <div className="tabs" role="tablist" aria-label="Background">
+        {tabs.map((t, i) => (
+          <button
+            key={t.key}
+            ref={(el) => (tabRefs.current[i] = el)}
+            type="button"
+            role="tab"
+            id={`${baseId}-tab-${t.key}`}
+            aria-selected={active === i}
+            aria-controls={`${baseId}-panel-${t.key}`}
+            tabIndex={active === i ? 0 : -1}
+            className="tabs__tab"
+            onClick={() => setActive(i)}
+            onKeyDown={onKeyDown}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {tabs.map((t, i) => (
+        <div
+          key={t.key}
+          role="tabpanel"
+          id={`${baseId}-panel-${t.key}`}
+          aria-labelledby={`${baseId}-tab-${t.key}`}
+          hidden={active !== i}
+        >
+          <t.Panel />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function About() {
   return (
     <section className="section" id="about">
       <div className="container about">
-        <h2 className="section__title">About</h2>
-        <div className="about__body">
-          {about.map((para, i) => (
-            <p key={i}>{para}</p>
-          ))}
-          <ul className="skills">
-            {skills.map((s) => (
-              <li key={s}>{s}</li>
+        <div className="about__intro">
+          <h2 className="section__title">About</h2>
+          <div className="about__body">
+            {about.map((para, i) => (
+              <p key={i}>{para}</p>
             ))}
-          </ul>
+            <ul className="skills">
+              {skills.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          </div>
         </div>
+        <Background />
       </div>
     </section>
   );
