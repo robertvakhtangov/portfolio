@@ -97,3 +97,15 @@ a {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---------- Scrollbar ----------
+   On mouse/trackpad devices the native scrollbar is hidden and replaced by
+   the overlay in ScrollIndicator.jsx. Touch devices keep the native one. */
+@media (pointer: fine) {
+  html {
+    scrollbar-width: none;
+  }
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}

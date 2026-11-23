@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import "./App.css";
 import headshot from "./assets/headshot-cutout.webp";
+import ScrollIndicator from "./ScrollIndicator.jsx";
 
 // ---- Edit your content here ------------------------------------------------
 const profile = {
@@ -758,6 +759,7 @@ function Contact() {
 function App() {
   return (
     <>
+      <ScrollIndicator />
       <Nav />
       <main>
         <Hero />
