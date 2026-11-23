@@ -14,6 +14,9 @@ export default function ScrollIndicator() {
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
+    // Touch devices keep the native indicator (rail hidden in CSS): skip the
+    // per-scroll and per-resize work entirely
+    if (window.matchMedia("(pointer: coarse)").matches) return;
     const rail = railRef.current;
     const thumb = thumbRef.current;
     let raf = 0;

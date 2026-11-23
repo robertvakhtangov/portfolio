@@ -161,6 +161,10 @@ function CompassMark({ className, ref }) {
 // The needle coasts to a stop wherever friction leaves it; after a beat, ROB and
 // VAK slide back in and "push" it upright (same duration/easing, see CSS).
 // Writes styles straight to the DOM each frame to avoid React re-renders.
+// Programmatic scrolls (e.g. keeping the Projects arrow in place on collapse)
+// shouldn't spin the logo compass; they mute it until this timestamp.
+const spinMute = { until: 0 };
+
 function useScrollSpin(markRef, logoRef) {
   useEffect(() => {
     const mark = markRef.current;
@@ -252,7 +256,7 @@ function useScrollSpin(markRef, logoRef) {
       const y = window.scrollY;
       const dy = y - lastY;
       lastY = y;
-      if (!dy) return;
+      if (!dy || performance.now() < spinMute.until) return;
       stopRealign();
       vel = Math.max(-MAX_VEL, Math.min(MAX_VEL, vel + dy * IMPULSE));
       if (!raf) raf = requestAnimationFrame(frame);
@@ -630,6 +634,7 @@ function Projects() {
   // and off screen. Scroll by however far it moves each frame so it stays put.
   function keepInView(target, duration) {
     cancelAnimationFrame(followRaf.current);
+    spinMute.until = performance.now() + duration + 100;
     const anchor = target.getBoundingClientRect().top;
     const end = performance.now() + duration;
     const step = () => {
@@ -652,6 +657,8 @@ function Projects() {
       el.style.maxHeight = `${el.scrollHeight}px`;
       // unlock afterwards so the grid can reflow freely
       doneTimer.current = setTimeout(() => (el.style.maxHeight = "none"), 950);
+    } else if (snapCollapse()) {
+      collapseInPlace(e.currentTarget);
     } else {
       el.style.transitionDuration = "0.5s";
       el.style.maxHeight = `${el.scrollHeight}px`;
@@ -660,6 +667,33 @@ function Projects() {
       keepInView(e.currentTarget, 650);
     }
     setExpanded(!expanded);
+  }
+
+  // Touch devices (iOS Safari scrolls on a separate thread, so a per-frame
+  // scroll correction lands a frame late and jitters) and reduced motion:
+  // fade the cards out, collapse and re-scroll in one step so the arrow stays
+  // put, then fade back in. Nothing animates while the page is scrolling.
+  function snapCollapse() {
+    return window.matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)").matches;
+  }
+
+  function collapseInPlace(target) {
+    const el = clipRef.current;
+    el.style.transition = "opacity 0.15s ease";
+    el.style.opacity = "0";
+    doneTimer.current = setTimeout(() => {
+      const before = target.getBoundingClientRect().top;
+      el.style.maxHeight = ""; // collapses instantly: only opacity transitions now
+      const delta = target.getBoundingClientRect().top - before;
+      spinMute.until = performance.now() + 300;
+      window.scrollBy({ top: delta, behavior: "instant" });
+      el.style.transition = "opacity 0.2s ease";
+      el.style.opacity = "1";
+      doneTimer.current = setTimeout(() => {
+        el.style.transition = "";
+        el.style.opacity = "";
+      }, 220);
+    }, 160);
   }
 
   return (
