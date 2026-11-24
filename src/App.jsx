@@ -102,46 +102,30 @@ const projects = [
     link: "https://github.com/SilverBC/CausalityAI",
   },
   {
-    title: "Project Two",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["Python", "SQL"],
-    link: "#",
+    title: "Patient Advocate U.S.",
+    description:
+      "Website for a board-certified patient advocate who helps clients with insurance denials, medical billing and care coordination. Visitors fill in a consultation form, and a serverless function emails their answers to the advocate.",
+    tags: ["React", "Tailwind CSS", "Vercel"],
+    link: "https://hillary-tau.vercel.app",
   },
   {
-    title: "Project Three",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["Three.js", "WebGL"],
-    link: "#",
+    title: "Stranger Football",
+    description:
+      "Clickable prototype of a pickup-football app for Tbilisi: find a game on a map of 834 real pitches from OpenStreetMap, take a spot on a team and play with strangers. I built the map interface, its filters and the game panels.",
+    tags: ["TypeScript", "React", "Leaflet"],
   },
   {
-    title: "Project Four",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["TypeScript", "React"],
-    link: "#",
+    title: "Baseball Minigame",
+    description:
+      "Interactive Three.js baseball scene for a Computer Graphics final project. A pitcher keyframe-animated in Blender throws, you swing the bat, and physics written from scratch decides where the ball goes.",
+    tags: ["Three.js", "JavaScript", "Blender"],
+    link: "https://robertvakhtangov.github.io/baseball-minigame/",
   },
   {
-    title: "Project Five",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["Unity", "C#"],
-    link: "#",
-  },
-  {
-    title: "Project Six",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["Java"],
-    link: "#",
-  },
-  {
-    title: "Project Seven",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["C++"],
-    link: "#",
-  },
-  {
-    title: "Project Eight",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["PHP"],
-    link: "#",
+    title: "ProjLang Interpreter",
+    description:
+      "Interpreter for a small expression language with closures and recursive functions. A JavaCC grammar builds the syntax tree, and an object-oriented evaluator runs it with static scoping and runtime type checks. Final project for CSC 8310 at Villanova.",
+    tags: ["Java", "JavaCC"],
   },
 ];
 // ----------------------------------------------------------------------------
@@ -578,13 +562,15 @@ function ProjectCard({ project, index, hidden }) {
             <li key={t}>{t}</li>
           ))}
         </ul>
-        <a
-          className="card__link"
-          href={project.link}
-          {...(project.link.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}
-        >
-          View project <span aria-hidden="true">→</span>
-        </a>
+        {project.link && (
+          <a
+            className="card__link"
+            href={project.link}
+            {...(project.link.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}
+          >
+            View project <span aria-hidden="true">→</span>
+          </a>
+        )}
       </div>
     </article>
   );
