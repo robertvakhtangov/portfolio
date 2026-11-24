@@ -2,6 +2,9 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import "./App.css";
 import headshot from "./assets/headshot-cutout.webp";
 import ScrollIndicator from "./ScrollIndicator.jsx";
+import imgBluffOrBuff from "./assets/projects/bluff-or-buff.webp";
+import imgStrangerFootball from "./assets/projects/stranger-football.webp";
+import imgProjLang from "./assets/projects/projlang.webp";
 import imgPatientAdvocate from "./assets/projects/patient-advocate.webp";
 import imgBaseball from "./assets/projects/baseball.webp";
 import imgWisp from "./assets/projects/wisp.webp";
@@ -103,13 +106,14 @@ const projects = [
       "HackPrinceton team project that checks causal claims against data: Gemini analyses an uploaded table, and statistics code caps the verdict so it never claims more than the data supports. I built the web app, accounts, background jobs, Investigator chat and Docker setup.",
     tags: ["Python", "React", "Gemini API", "Docker"],
     link: "https://github.com/SilverBC/CausalityAI",
+    image: imgBluffOrBuff,
   },
   {
     title: "Patient Advocate U.S.",
     description:
       "Website for a board-certified patient advocate who helps clients with insurance denials, medical billing and care coordination. Visitors fill in a consultation form, and a serverless function emails their answers to the advocate.",
     tags: ["React", "Tailwind CSS", "Vercel"],
-    link: "https://hillary-tau.vercel.app",
+    link: "https://patientadvocateus.com",
     image: imgPatientAdvocate,
   },
   {
@@ -117,6 +121,7 @@ const projects = [
     description:
       "Clickable prototype of a pickup-football app for Tbilisi: find a game on a map of 834 real pitches from OpenStreetMap, take a spot on a team and play with strangers. I built the map interface, its filters and the game panels.",
     tags: ["TypeScript", "React", "Leaflet"],
+    image: imgStrangerFootball,
   },
   {
     title: "Baseball Minigame",
@@ -131,6 +136,7 @@ const projects = [
     description:
       "Interpreter for a small expression language with closures and recursive functions. A JavaCC grammar builds the syntax tree, and an object-oriented evaluator runs it with static scoping and runtime type checks. Final project for CSC 8310 at Villanova.",
     tags: ["Java", "JavaCC"],
+    image: imgProjLang,
   },
   {
     title: "Project Wisp",
