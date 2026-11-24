@@ -930,4 +930,8 @@
   .nav__links a {
     font-size: 0.85rem;
   }
+  /* no room for a fourth link; the résumé is also linked in Contact */
+  .nav__resume {
+    display: none;
+  }
 }

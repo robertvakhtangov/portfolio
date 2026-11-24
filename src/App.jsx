@@ -19,6 +19,7 @@ const profile = {
   email: "robertvakhtangov@gmail.com",
   github: "https://github.com/robertvakhtangov",
   linkedin: "https://www.linkedin.com/in/robert-vakhtangov-4684551a0/",
+  resume: "/Robert-Vakhtangov-Resume.pdf",
 };
 
 const about = [
@@ -327,6 +328,7 @@ function Nav() {
             <li><a href="#about">About</a></li>
             <li><a href="#projects">Projects</a></li>
             <li><a href="#contact">Contact</a></li>
+            <li className="nav__resume"><a href={profile.resume} target="_blank" rel="noreferrer">Résumé</a></li>
           </ul>
         </nav>
       </div>
@@ -812,6 +814,7 @@ function Contact() {
           {profile.linkedin && (
             <li><a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a></li>
           )}
+          <li><a href={profile.resume} target="_blank" rel="noreferrer">Résumé</a></li>
         </ul>
       </div>
     </section>

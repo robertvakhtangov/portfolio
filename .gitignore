@@ -29,3 +29,5 @@ src/assets/Robert_Vakhtangov.jpg
 # Personal resume files (contain home address and phone number)
 *.pdf
 resume.md
+# Public resume (no address or phone), served by the site
+!public/Robert-Vakhtangov-Resume.pdf
