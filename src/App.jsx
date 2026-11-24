@@ -2,6 +2,9 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import "./App.css";
 import headshot from "./assets/headshot-cutout.webp";
 import ScrollIndicator from "./ScrollIndicator.jsx";
+import imgPatientAdvocate from "./assets/projects/patient-advocate.webp";
+import imgBaseball from "./assets/projects/baseball.webp";
+import imgWisp from "./assets/projects/wisp.webp";
 
 // ---- Edit your content here ------------------------------------------------
 const profile = {
@@ -107,6 +110,7 @@ const projects = [
       "Website for a board-certified patient advocate who helps clients with insurance denials, medical billing and care coordination. Visitors fill in a consultation form, and a serverless function emails their answers to the advocate.",
     tags: ["React", "Tailwind CSS", "Vercel"],
     link: "https://hillary-tau.vercel.app",
+    image: imgPatientAdvocate,
   },
   {
     title: "Stranger Football",
@@ -120,12 +124,21 @@ const projects = [
       "Interactive Three.js baseball scene for a Computer Graphics final project. A pitcher keyframe-animated in Blender throws, you swing the bat, and physics written from scratch decides where the ball goes.",
     tags: ["Three.js", "JavaScript", "Blender"],
     link: "https://robertvakhtangov.github.io/baseball-minigame/",
+    image: imgBaseball,
   },
   {
     title: "ProjLang Interpreter",
     description:
       "Interpreter for a small expression language with closures and recursive functions. A JavaCC grammar builds the syntax tree, and an object-oriented evaluator runs it with static scoping and runtime type checks. Final project for CSC 8310 at Villanova.",
     tags: ["Java", "JavaCC"],
+  },
+  {
+    title: "Project Wisp",
+    description:
+      "Puzzle-platformer made in 48 hours for GMTK Game Jam 2020 on the theme \"out of control\": guide a flaming skull through a dimly lit dungeon while protecting the fire that keeps it alive. I was lead developer and designer.",
+    tags: ["Game Jam", "2D Platformer", "Hand-drawn"],
+    link: "https://darkroomlab.itch.io/wisp-gmtk2020",
+    image: imgWisp,
   },
 ];
 // ----------------------------------------------------------------------------
