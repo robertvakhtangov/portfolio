@@ -22,11 +22,29 @@ const profile = {
 };
 
 const about = [
-  "I'm a developer who enjoys turning ideas into polished, usable products. I care about the details: performance, accessibility, and interfaces that feel good to use.",
-  "Lately I've been exploring creative coding and 3D on the web with Three.js.",
+  "I'm a software engineer who enjoys turning ideas into polished, usable products. I've shipped features for a live trading platform and enterprise web apps, taught Systems Programming, and I care about the details: performance, accessibility and interfaces that feel good to use.",
+  "I'm currently doing my Master's in Computer Science at Villanova. Lately that's meant AI tools, map-based apps, 3D on the web and even a programming-language interpreter.",
 ];
 
-const skills = ["JavaScript", "TypeScript", "React", "Node.js", "Python", "Three.js", "SQL", "Git"];
+const skills = [
+  "JavaScript",
+  "TypeScript",
+  "React",
+  "Python",
+  "Java",
+  "C++",
+  "C#",
+  "PHP",
+  "Three.js",
+  "Tailwind CSS",
+  "Leaflet",
+  "Gemini API",
+  "Docker",
+  "SQL",
+  "Git",
+  "Unity",
+  "Blender",
+];
 
 const experience = [
   {
