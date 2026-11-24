@@ -784,7 +784,7 @@ function Contact() {
       <div className="container contact__inner">
         <h2 className="contact__title">Let's work together.</h2>
         <p className="contact__text">
-          I'm open to new opportunities and collaborations. My inbox is always open.
+          I'm open to new opportunities and collaborations.
         </p>
         <a className="btn btn--light" href={`mailto:${profile.email}`}>
           {profile.email}
