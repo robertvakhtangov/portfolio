@@ -95,10 +95,11 @@ const education = [
 // Optional per project: image (import it from ./assets, ideally ~1280×720, 16:9).
 const projects = [
   {
-    title: "Project One",
-    description: "A short description of what this project does and the problem it solves.",
-    tags: ["React", "Node.js"],
-    link: "#",
+    title: "Bluff-or-Buff",
+    description:
+      "HackPrinceton team project that checks causal claims against data: Gemini analyses an uploaded table, and statistics code caps the verdict so it never claims more than the data supports. I built the web app, accounts, background jobs, Investigator chat and Docker setup.",
+    tags: ["Python", "React", "Gemini API", "Docker"],
+    link: "https://github.com/SilverBC/CausalityAI",
   },
   {
     title: "Project Two",
@@ -577,7 +578,11 @@ function ProjectCard({ project, index, hidden }) {
             <li key={t}>{t}</li>
           ))}
         </ul>
-        <a className="card__link" href={project.link}>
+        <a
+          className="card__link"
+          href={project.link}
+          {...(project.link.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}
+        >
           View project <span aria-hidden="true">→</span>
         </a>
       </div>
