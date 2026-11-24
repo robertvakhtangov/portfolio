@@ -103,7 +103,7 @@ const projects = [
   {
     title: "Bluff-or-Buff",
     description:
-      "HackPrinceton team project that checks causal claims against data: Gemini analyses an uploaded table, and statistics code caps the verdict so it never claims more than the data supports. I built the web app, accounts, background jobs, Investigator chat and Docker setup.",
+      "An AI that checks whether causal claims actually hold up, and is never allowed to claim more than the data shows. Built at HackPrinceton.",
     tags: ["Python", "React", "Gemini API", "Docker"],
     link: "https://github.com/SilverBC/CausalityAI",
     image: imgBluffOrBuff,
@@ -111,7 +111,7 @@ const projects = [
   {
     title: "Patient Advocate U.S.",
     description:
-      "Website for a board-certified patient advocate who helps clients with insurance denials, medical billing and care coordination. Visitors fill in a consultation form, and a serverless function emails their answers to the advocate.",
+      "Live site for a board-certified patient advocate, with a consultation form that goes straight to the advocate's inbox.",
     tags: ["React", "Tailwind CSS", "Vercel"],
     link: "https://patientadvocateus.com",
     image: imgPatientAdvocate,
@@ -119,14 +119,14 @@ const projects = [
   {
     title: "Stranger Football",
     description:
-      "Clickable prototype of a pickup-football app for Tbilisi: find a game on a map of 834 real pitches from OpenStreetMap, take a spot on a team and play with strangers. I built the map interface, its filters and the game panels.",
+      "A pickup-football app for Tbilisi: find a game on a map of 834 real pitches, grab a spot on a team and play with strangers.",
     tags: ["TypeScript", "React", "Leaflet"],
     image: imgStrangerFootball,
   },
   {
     title: "Baseball Minigame",
     description:
-      "Interactive Three.js baseball scene for a Computer Graphics final project. A pitcher keyframe-animated in Blender throws, you swing the bat, and physics written from scratch decides where the ball goes.",
+      "Pitch, swing and send the ball flying in a 3D stadium, with ball physics written from scratch.",
     tags: ["Three.js", "JavaScript", "Blender"],
     link: "https://robertvakhtangov.github.io/baseball-minigame/",
     image: imgBaseball,
@@ -134,14 +134,14 @@ const projects = [
   {
     title: "ProjLang Interpreter",
     description:
-      "Interpreter for a small expression language with closures and recursive functions. A JavaCC grammar builds the syntax tree, and an object-oriented evaluator runs it with static scoping and runtime type checks. Final project for CSC 8310 at Villanova.",
+      "A small programming language with closures and recursion, parsed and run from scratch in Java.",
     tags: ["Java", "JavaCC"],
     image: imgProjLang,
   },
   {
     title: "Project Wisp",
     description:
-      "Puzzle-platformer made in 48 hours for GMTK Game Jam 2020 on the theme \"out of control\": guide a flaming skull through a dimly lit dungeon while protecting the fire that keeps it alive. I was lead developer and designer.",
+      "A 48-hour game jam puzzle-platformer: guide a flaming skull through a dark dungeon and keep its fire alive. Lead developer and designer.",
     tags: ["Game Jam", "2D Platformer", "Hand-drawn"],
     link: "https://darkroomlab.itch.io/wisp-gmtk2020",
     image: imgWisp,
