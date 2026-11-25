@@ -136,13 +136,76 @@
   background: var(--cream-100);
 }
 
-.btn--outline {
-  color: var(--cream-50);
-  border-color: rgba(250, 246, 239, 0.4);
+/* The hero's primary button sits beside the pressed-in slots, so it stays put */
+.hero .btn--light:hover {
+  transform: none;
 }
 
+/* Burgundy slot: pressed into the hero surface like the project-card slots
+   and the expand ring, instead of outlined. Like a real button, hover only
+   readies it (the label brightens and glows faintly) and the click presses it
+   all the way in (3px, darker, deeper shadow). Size never changes. */
+.btn--outline,
+.icon-btn {
+  color: var(--cream-50);
+  border-color: transparent;
+  background: rgba(20, 3, 8, 0.18);
+  box-shadow:
+    inset 0 2px 6px rgba(20, 3, 8, 0.45),
+    inset 0 1px 2px rgba(20, 3, 8, 0.3),
+    0 1px 0 rgba(250, 246, 239, 0.08);
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s, padding 0.2s,
+    text-shadow 0.2s;
+}
+
+.btn--outline {
+  --sink: 0px;
+  padding-top: calc(0.8em + var(--sink));
+  padding-bottom: calc(0.8em - var(--sink));
+}
+
+.icon-btn svg {
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.btn--outline:hover,
+.icon-btn:hover {
+  transform: none;
+  color: #fff;
+  background: rgba(20, 3, 8, 0.22);
+  box-shadow:
+    inset 0 2px 7px rgba(20, 3, 8, 0.5),
+    inset 0 1px 2px rgba(20, 3, 8, 0.32),
+    0 1px 0 rgba(250, 246, 239, 0.1);
+}
+
+/* Hover: the label/icon glows faintly instead of moving */
 .btn--outline:hover {
-  border-color: var(--cream-50);
+  text-shadow: 0 0 8px rgba(255, 244, 230, 0.45);
+}
+
+.icon-btn:hover svg {
+  filter: drop-shadow(0 0 4px rgba(255, 244, 230, 0.45));
+}
+
+.btn--outline:active,
+.icon-btn:active {
+  color: #fff;
+  background: rgba(20, 3, 8, 0.3);
+  box-shadow:
+    inset 0 3px 9px rgba(20, 3, 8, 0.6),
+    inset 0 1px 3px rgba(20, 3, 8, 0.4),
+    0 1px 0 rgba(250, 246, 239, 0.1);
+  transition-duration: 0.06s;
+}
+
+.btn--outline:active {
+  --sink: 3px;
+}
+
+.icon-btn:active svg {
+  transform: translateY(3px);
+  transition-duration: 0.06s;
 }
 
 /* ---------- Hero ---------- */
@@ -261,21 +324,12 @@
   height: 3.16rem;
   flex-shrink: 0;
   border-radius: 50%;
-  border: 1.5px solid rgba(250, 246, 239, 0.4);
-  color: var(--cream-50);
-  transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
+  border: 1.5px solid transparent;
 }
 
 .icon-btn svg {
   width: 1.3rem;
   height: 1.3rem;
-}
-
-.icon-btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--cream-50);
-  background: var(--cream-50);
-  color: var(--burgundy-800);
 }
 
 /* ---------- Sections ---------- */
@@ -566,13 +620,66 @@
   background: var(--cream-50);
   border: 1px solid var(--cream-200);
   border-radius: var(--radius);
+  position: relative;
   transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
 }
 
-.card:hover {
-  transform: translateY(-4px);
+/* Each card sits in a slot pressed into the page. On hover the card lifts
+   up out of it, like a card being pulled from a holder, and the recessed
+   slot shows in the gap left below. */
+.card-slot {
+  position: relative;
+  display: flex;
+  border-radius: var(--radius);
+}
+
+.card-slot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: #ece3d4;
+  box-shadow:
+    inset 0 2px 6px rgba(61, 15, 26, 0.22),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.55),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.card-slot > .card {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Cards fan out as they're pulled: the left column also slides left, the right
+   column right, and the middle goes straight up. */
+@media (min-width: 1025px) {
+  .card-slot:nth-child(3n + 1) {
+    --pull-x: -8px;
+  }
+  .card-slot:nth-child(3n) {
+    --pull-x: 8px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .card-slot:nth-child(2n + 1) {
+    --pull-x: -8px;
+  }
+  .card-slot:nth-child(2n) {
+    --pull-x: 8px;
+  }
+}
+
+.card-slot:hover::before {
+  opacity: 1;
+}
+
+.card-slot:hover > .card {
+  transform: translate(var(--pull-x, 0px), -14px);
   border-color: rgba(114, 32, 53, 0.3);
-  box-shadow: 0 16px 32px -16px rgba(61, 15, 26, 0.25);
+  box-shadow: 0 10px 22px -14px rgba(61, 15, 26, 0.3);
 }
 
 /* Image area; shows a numbered burgundy panel until a screenshot is added */

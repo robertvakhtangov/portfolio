@@ -582,35 +582,37 @@ const TAB = (() => {
 
 function ProjectCard({ project, index, hidden }) {
   return (
-    <article className="card" inert={hidden}>
-      <div className="card__media">
-        {project.image ? (
-          <img src={project.image} alt="" loading="lazy" />
-        ) : (
-          <span className="card__media-num" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-        )}
-      </div>
-      <div className="card__body">
-        <h3 className="card__title">{project.title}</h3>
-        <p className="card__desc">{project.description}</p>
-        <ul className="card__tags">
-          {project.tags.map((t) => (
-            <li key={t}>{t}</li>
-          ))}
-        </ul>
-        {project.link && (
-          <a
-            className="card__link"
-            href={project.link}
-            {...(project.link.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}
-          >
-            View project <span aria-hidden="true">→</span>
-          </a>
-        )}
-      </div>
-    </article>
+    <div className="card-slot" inert={hidden}>
+      <article className="card">
+        <div className="card__media">
+          {project.image ? (
+            <img src={project.image} alt="" loading="lazy" />
+          ) : (
+            <span className="card__media-num" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          )}
+        </div>
+        <div className="card__body">
+          <h3 className="card__title">{project.title}</h3>
+          <p className="card__desc">{project.description}</p>
+          <ul className="card__tags">
+            {project.tags.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+          {project.link && (
+            <a
+              className="card__link"
+              href={project.link}
+              {...(project.link.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}
+            >
+              View project <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </div>
+      </article>
+    </div>
   );
 }
 
