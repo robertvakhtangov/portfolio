@@ -296,11 +296,85 @@ function useScrollSpin(markRef, logoRef) {
   }, [markRef, logoRef]);
 }
 
+const NAV_SECTIONS = ["about", "projects", "contact"];
+
+// Scroll position as a fractional index into the nav sections, e.g. 1.5 is
+// halfway from Projects' start to Contact's. A section "starts" at the scroll
+// position its nav link jumps to (its top at the top of the screen), so a
+// click always lands the slot exactly on that link. Anchors are capped at the
+// bottom of the page so the last (short) section is still reached. Below 0
+// means the hero: -1 is half a screen before About starts.
+function sectionProgress(ids) {
+  const vh = window.innerHeight;
+  const y = window.scrollY;
+  const maxScroll = document.documentElement.scrollHeight - vh;
+  const anchors = [];
+  for (const id of ids) {
+    const el = document.getElementById(id);
+    let a = el ? el.getBoundingClientRect().top + y : maxScroll;
+    a = Math.min(a, maxScroll);
+    if (anchors.length && a <= anchors[anchors.length - 1]) a = anchors[anchors.length - 1] + 1;
+    anchors.push(a);
+  }
+  if (y < anchors[0]) return Math.max(-1, (y - anchors[0]) / (vh * 0.5));
+  for (let i = 0; i < anchors.length - 1; i++) {
+    if (y < anchors[i + 1]) return i + (y - anchors[i]) / (anchors[i + 1] - anchors[i]);
+  }
+  return anchors.length - 1;
+}
+
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState(null);
   const markRef = useRef(null);
   const logoRef = useRef(null);
+  const linksRef = useRef(null);
+  const slotRef = useRef(null);
   useScrollSpin(markRef, logoRef);
+
+  // The recessed slot behind the links tracks the scroll continuously, like a
+  // second scrollbar: between two sections it sits partway between their
+  // links, stretching to blend their widths. It fades in over the end of the
+  // hero. The link it is closest to counts as the current one.
+  useEffect(() => {
+    const list = linksRef.current;
+    const slot = slotRef.current;
+    if (!list || !slot) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const f = sectionProgress(NAV_SECTIONS);
+      const links = NAV_SECTIONS.map((id) => list.querySelector(`a[href="#${id}"]`));
+      const p = Math.max(0, f);
+      const i0 = Math.min(Math.floor(p), links.length - 1);
+      const i1 = Math.min(i0 + 1, links.length - 1);
+      const t = p - i0;
+      const lerp = (a, b) => a + (b - a) * t;
+      const x = lerp(links[i0].parentElement.offsetLeft, links[i1].parentElement.offsetLeft);
+      const w = lerp(links[i0].offsetWidth, links[i1].offsetWidth);
+      slot.style.transform = `translateX(${x.toFixed(2)}px)`;
+      slot.style.width = `${w.toFixed(2)}px`;
+      slot.style.opacity = String(Math.min(1, 1 + f));
+      setActive(f <= -0.5 ? null : NAV_SECTIONS[Math.round(p)]);
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    // link widths change once the web font loads, and section heights change
+    // when the project grid expands
+    const ro = new ResizeObserver(schedule);
+    ro.observe(list);
+    ro.observe(document.body);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      ro.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -323,10 +397,19 @@ function Nav() {
           <span className="nav__word nav__word--right">Vak</span>
         </a>
         <nav>
-          <ul className="nav__links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
+          <ul className="nav__links" ref={linksRef}>
+            <li className="nav__slot" ref={slotRef} aria-hidden="true" />
+            {NAV_SECTIONS.map((id) => (
+              <li key={id}>
+                <a
+                  href={`#${id}`}
+                  className={active === id ? "is-active" : undefined}
+                  aria-current={active === id ? "true" : undefined}
+                >
+                  {id[0].toUpperCase() + id.slice(1)}
+                </a>
+              </li>
+            ))}
             <li className="nav__resume"><a href={profile.resume} target="_blank" rel="noreferrer">Résumé</a></li>
           </ul>
         </nav>
