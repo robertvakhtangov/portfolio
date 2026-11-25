@@ -180,13 +180,6 @@
   left: max(-24px, calc((100% - var(--hero-width)) / 2 - 64px));
   height: var(--photo-h);
   aspect-ratio: 2 / 3;
-  /* Fade the shoulders out at the sides and the torso out at the bottom */
-  --fade-x: linear-gradient(to right, transparent 0%, #000 22%, #000 78%, transparent 100%);
-  --fade-y: linear-gradient(to bottom, #000 62%, transparent 100%);
-  -webkit-mask-image: var(--fade-x), var(--fade-y);
-  -webkit-mask-composite: source-in;
-  mask-image: var(--fade-x), var(--fade-y);
-  mask-composite: intersect;
   pointer-events: none;
 }
 
@@ -917,7 +910,6 @@
     transform: translateX(-50%);
     height: 56svh;
     max-width: none;
-    --fade-y: linear-gradient(to bottom, #000 50%, transparent 100%);
   }
   .hero__content {
     padding-left: var(--gutter);
