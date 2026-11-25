@@ -14,8 +14,7 @@ const profile = {
   name: "Robert Vakhtangov",
   brand: "RobVak",
   role: "Software Engineer",
-  tagline:
-    "I build thoughtful, fast web experiences — from clean interfaces to the systems behind them.",
+  tagline: "Curious about everything, building some of it.",
   email: "robertvakhtangov@gmail.com",
   github: "https://github.com/robertvakhtangov",
   linkedin: "https://www.linkedin.com/in/robert-vakhtangov-4684551a0/",
