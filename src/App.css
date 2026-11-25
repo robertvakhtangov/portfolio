@@ -168,14 +168,18 @@
   pointer-events: none;
 }
 
-/* Cut-out portrait anchored to the bottom-left, rising out of the fold */
+/* Cut-out portrait on the left. On wide screens it fills the height and rises
+   out of the fold. When the width limits it (at most 50vw wide, so 75vw tall)
+   it is centred on the same line as the text block, whose centre sits 32px
+   below the hero's because of the nav padding, instead of sinking into the
+   bottom corner. Percentages here resolve against the hero's height. */
 .hero__photo {
+  --photo-h: min(calc(100% - 72px), 75vw);
   position: absolute;
-  bottom: 0;
+  bottom: max(0px, calc((100% - var(--photo-h)) / 2 - 32px));
   left: max(-24px, calc((100% - var(--hero-width)) / 2 - 64px));
-  height: calc(100% - 72px);
+  height: var(--photo-h);
   aspect-ratio: 2 / 3;
-  max-width: 50%;
   /* Fade the shoulders out at the sides and the torso out at the bottom */
   --fade-x: linear-gradient(to right, transparent 0%, #000 22%, #000 78%, transparent 100%);
   --fade-y: linear-gradient(to bottom, #000 62%, transparent 100%);
@@ -243,6 +247,7 @@
 .hero__cta {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 12px;
 }
 
@@ -891,8 +896,17 @@
 }
 
 /* ---------- Responsive ---------- */
-/* Stack on narrow screens: photo across the top, text below */
-@media (max-width: 820px) {
+/* Side by side on narrower screens the photo takes up to ~40% of the width,
+   so keep the text in the remaining column instead of running over it */
+@media (max-width: 1000px) {
+  .hero__content {
+    padding-left: 38vw;
+  }
+}
+
+/* Stack only on phone-shaped (tall, narrow) screens: photo across the top,
+   text below. Anything wider keeps the photo and text side by side. */
+@media (max-aspect-ratio: 5 / 8), (max-width: 560px) {
   .hero {
     align-items: flex-end;
   }
@@ -906,12 +920,14 @@
     --fade-y: linear-gradient(to bottom, #000 50%, transparent 100%);
   }
   .hero__content {
+    padding-left: var(--gutter);
     align-items: flex-start;
     text-align: left;
     padding-top: calc(64px + 50svh);
     padding-bottom: 48px;
   }
-  .hero__actions {
+  .hero__actions,
+  .hero__cta {
     justify-content: flex-start;
   }
 }
